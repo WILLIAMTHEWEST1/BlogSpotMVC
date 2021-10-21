@@ -1,5 +1,6 @@
 using BlogSpotMVC.Data;
 using BlogSpotMVC.Models;
+using BlogSpotMVC.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,7 +31,7 @@ namespace BlogSpotMVC
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    ConnectionService.GetConnectionString(Configuration)));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -41,6 +42,8 @@ namespace BlogSpotMVC
 
 
             services.AddControllersWithViews();
+
+            services.AddTransient<DataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
