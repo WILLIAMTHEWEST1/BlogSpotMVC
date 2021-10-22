@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,10 +25,15 @@ namespace BlogSpotMVC.Models
         [StringLength(40, ErrorMessage = "{0} must be at least {2} and cannot be more than {2} characters long", MinimumLength = 2)]
         public string LastName { get; set; }
 
-
+        [Required]
         [Display(Name = "Display Name")]
         [StringLength(40, ErrorMessage = "{0} must be at least {2} and cannot be more than {2} characters long", MinimumLength = 2)]
         public string DisplayName { get; set; }
+
+
+        //This represents the byte data not the physical file
+        public byte[] ImageData { get; set; }
+        public string ImageType { get; set; }
 
 
         [NotMapped]
