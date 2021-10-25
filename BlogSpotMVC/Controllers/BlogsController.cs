@@ -7,20 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BlogSpotMVC.Data;
 using BlogSpotMVC.Models;
+using BlogSpotMVC.Services.Interfaces;
 
 namespace BlogSpotMVC.Controllers
 {
     public class BlogsController : Controller
     {
-        private readonly ApplicationDbContext _context;  //Class Member Dependancy Injection
+        private readonly ApplicationDbContext _context;
+        private readonly IImageService _imageService;
 
-        public BlogsController(ApplicationDbContext context) //constructor
+        public BlogsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // GET: Blogs
-        public async Task<IActionResult> Index() 
+        public async Task<IActionResult> Index()
         {
             return View(await _context.Blogs.ToListAsync());
         }
@@ -54,13 +56,12 @@ namespace BlogSpotMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description")] Blog blog)
+        public async Task<IActionResult> Create([Bind("Name,Description,Image")] Blog blog)
         {
             if (ModelState.IsValid)
             {
-                //here we programmatically add in the Created Date
-
                 blog.Created = DateTime.Now;
+
                 _context.Add(blog);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -89,7 +90,7 @@ namespace BlogSpotMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Created")] Blog blog)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Created,ImageData,ContentType")] Blog blog)
         {
             if (id != blog.Id)
             {

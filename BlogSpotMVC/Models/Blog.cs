@@ -25,7 +25,7 @@ namespace BlogSpotMVC.Models
 
         //This represents the byte data not the physical file
         public byte[] ImageData { get; set; }
-        public string ImageType { get; set; }
+        public string ContentType { get; set; }
 
         //This property represents a physical file chosen by the user
         [NotMapped]
