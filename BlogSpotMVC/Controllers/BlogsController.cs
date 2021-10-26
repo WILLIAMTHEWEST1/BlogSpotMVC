@@ -57,7 +57,7 @@ namespace BlogSpotMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Image")] Blog blog)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Image,Created,ImageData,ContentType")] Blog blog)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace BlogSpotMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Created,ImageData,ContentType")] Blog blog)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Image")] Blog blog)
         {
             if (id != blog.Id)
             {
@@ -122,6 +122,22 @@ namespace BlogSpotMVC.Controllers
             {
                 try
                 {
+                    //Looking to see if a change of image has happened
+                    if(blog.Image is not null)
+                    {
+                        //If the image fails validation, make the user aware
+                        if(!_imageService.ValidImage(blog.Image))
+                        {
+                            ModelState.AddModelError("Image", "There was a problem with the image, please choose another one.");
+                            return View(blog);
+                        }
+                        else
+                        {
+                            blog.ImageData = await _imageService.EncodeImageAsync(blog.Image);
+                            blog.ContentType = _imageService.ContentType(blog.Image);
+                        }
+                    }
+
                     _context.Update(blog);
                     await _context.SaveChangesAsync();
                 }
