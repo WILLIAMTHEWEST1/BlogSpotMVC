@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using BlogSpotMVC.Services.Interfaces;
 
 namespace BlogSpotMVC.Areas.Identity.Pages.Account
 {
@@ -24,17 +26,19 @@ namespace BlogSpotMVC.Areas.Identity.Pages.Account
         private readonly UserManager<BlogUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IImageService _imageService;
 
         public RegisterModel(
             UserManager<BlogUser> userManager,
             SignInManager<BlogUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, IImageService imageService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+           _imageService = imageService;
         }
 
         [BindProperty]
@@ -78,6 +82,8 @@ namespace BlogSpotMVC.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            public IFormFile Image { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -100,9 +106,17 @@ namespace BlogSpotMVC.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    DisplayName = Input.DisplayName
+                    DisplayName = Input.DisplayName,
+                    ImageData = await _imageService.EncodeImageAsync("DefaultUser.jfif"),
+                    ImageType = "png"
 
                 };
+
+                if(Input.Image is not null)
+                {
+
+                }
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

@@ -16,9 +16,10 @@ namespace BlogSpotMVC.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IImageService _imageService;
 
-        public BlogsController(ApplicationDbContext context)
+        public BlogsController(ApplicationDbContext context, IImageService imageService)
         {
             _context = context;
+            _imageService = imageService;
         }
 
         // GET: Blogs
@@ -60,6 +61,26 @@ namespace BlogSpotMVC.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (blog.Image is null)
+                {
+                    blog.ImageData = await _imageService.EncodeImageAsync("defaultBlog.jpg");
+                    blog.ContentType = "jpg";
+                }
+                else
+                {
+                    if (!_imageService.ValidImage(blog.Image))
+                    {
+                        //We need to add a custom Model Error and inform the user
+                        ModelState.AddModelError("Image", "Please choose a valid image");
+                        return View(blog);
+                    }
+                    else
+                    {
+                        blog.ImageData = await _imageService.EncodeImageAsync(blog.Image);
+                        blog.ContentType = _imageService.ContentType(blog.Image);
+                    }
+                }
+
                 blog.Created = DateTime.Now;
 
                 _context.Add(blog);

@@ -1,4 +1,8 @@
-﻿@model IEnumerable<BlogSpotMVC.Models.Blog>
+﻿@using BlogSpotMVC.Models
+@using BlogSpotMVC.Services.Interfaces
+
+@inject IImageService _imageService
+@model IEnumerable<Blog>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,6 +17,9 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayName("Blog Image")
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
@@ -21,39 +28,32 @@
             <th>
                 @Html.DisplayNameFor(model => model.Created)
             </th>
-            <td>
-                @Html.DisplayNameFor(model => model.ImageData)
-            </td>
-            <td>
-                @Html.DisplayNameFor(model => model.ContentType)
-            </td>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageData)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContentType)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img class="img-fluid" src="@_imageService.DecodeImage(item.ImageData, item.ContentType)" />
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Created)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

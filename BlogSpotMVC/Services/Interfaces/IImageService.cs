@@ -16,6 +16,6 @@ namespace BlogSpotMVC.Services.Interfaces
 
         string ContentType(IFormFile file);
 
-        int Size(IFormFile file);
+        bool ValidImage(IFormFile file);
     }
 }
